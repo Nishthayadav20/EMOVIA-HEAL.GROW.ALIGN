@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emovia - Heal & Align</title>
+    <!-- Leaflet Map CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- CSS File -->
+    <link rel="stylesheet" href="css/style.css?v=happyminds-theme-v7">
+</head>
+
+<body>
+
+    <!-- Video Background Container (Disabled for clean light soothing theme)
+    <div id="video-bg-container">
+        <video autoplay muted loop playsinline id="bg-video">
+            <source
+                src="https://player.vimeo.com/external/371433846.sd.mp4?s=236da2f3c0548a73feeb6c245903b413152db4b4&profile_id=139&oauth2_token_id=57447761"
+                type="video/mp4">
+        </video>
+    </div>
+    -->
+
+    <!-- Canvas Gradient Fallback (Used if video fails to load or browser blocks it) -->
+    <canvas id="fallback-canvas"></canvas>
+
+    <!-- Fine ambient radial gradient overlay -->
+    <div id="overlay-gradient"></div>
+
+    <!-- Starting Page Splash Screen -->
+    <div id="app-shell">
+        <!-- Sidebar Shell -->
+        <aside id="sidebar" class="glass-panel">
+            <div class="brand">
+                <div class="brand-icon">
+                    <i data-lucide="sparkles" style="color: white;"></i>
+                </div>
+                <span class="brand-name"
+                    style="background: linear-gradient(120deg, var(--primary-cyan) 30%, var(--accent-purple) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800;">Emovia</span>
+            </div>
+
+                                    <ul class="nav-menu">
+                <li class="nav-item" onclick="window.location.href='index.html'">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span class="lang-txt" data-key="menu-overview">Overview</span>
+                </li>
+                <li class="nav-item" onclick="window.location.href='companion.html'">
+                    <i data-lucide="smile"></i>
+                    <span class="lang-txt" data-key="menu-companion">AI Companion</span>
+                </li>
+                <li class="nav-item" onclick="window.location.href='journal.html'">
+                    <i data-lucide="book-open"></i>
+                    <span class="lang-txt" data-key="menu-journal">Private Journal</span>
+                </li>
+                <li class="nav-item" onclick="window.location.href='bookings.html'">
+                    <i data-lucide="calendar"></i>
+                    <span class="lang-txt" data-key="menu-bookings">Therapy Desk</span>
+                </li>
+                <li class="nav-item active" onclick="window.location.href='mind.html'">
+                    <i data-lucide="wind"></i>
+                    <span class="lang-txt" data-key="menu-mind">Mind & Yoga</span>
+                </li>
+                <li class="nav-item" onclick="window.location.href='student.html'">
+                    <i data-lucide="graduation-cap"></i>
+                    <span class="lang-txt" data-key="menu-student">Student Desk</span>
+                </li>
+                <li class="nav-item" onclick="window.location.href='community.html'">
+                    <i data-lucide="users"></i>
+                    <span class="lang-txt" data-key="menu-community">Social Circle & Blogs</span>
+                </li>
+                <li class="nav-item" onclick="window.location.href='diagnostics.html'">
+                    <i data-lucide="clipboard-check"></i>
+                    <span class="lang-txt" data-key="menu-diagnostics">Diagnostics</span>
+                </li>
+                <li class="nav-item" onclick="window.location.href='subscription.html'" style="margin-top: 15px; border: 1px solid rgba(255,215,0,0.25);">
+                    <i data-lucide="crown" style="color: #ffd700;"></i>
+                    <span class="lang-txt" data-key="menu-premium" style="color: #ffd700; font-weight:600;">Upgrade to Zen</span>
+                </li>
+            </ul>
+
+            <!-- User Panel Card -->
+            <div class="user-widget">
+                <div class="user-avatar-container">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256&auto=format&fit=crop"
+                        alt="User Avatar" class="user-avatar" id="app-user-avatar">
+                    <div class="premium-badge" id="app-premium-badge">
+                        <i class="lucide-crown">★</i>
+                    </div>
+                </div>
+                <div class="user-info">
+                    <div class="user-name" id="app-user-name">Guest Explorer</div>
+                    <div class="user-status" id="app-user-tier">Standard Plan</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Viewport Area -->
+        <main id="main-viewport">
+            <header class="header-wrapper">
+                <div class="welcome-box">
+                    <h1 id="welcome-title">Emovia welcomes you</h1>
+                    <p id="welcome-sub">Let's prioritize your mental wellness today.</p>
+                </div>
+                <div class="top-actions">
+                    <button class="lang-select-btn" id="bg-music-toggle-btn" title="Toggle background music"
+                        style="padding: 12px; border-radius: 50%; width: 44px; height: 44px; justify-content: center; align-items: center; display: inline-flex; flex-shrink: 0;">
+                        <i data-lucide="volume-2" id="bg-music-icon" style="width: 18px; height: 18px;"></i>
+                    </button>
+                    <button class="lang-select-btn" id="lang-btn">
+                        <i data-lucide="languages"></i>
+                        <span>English</span>
+                    </button>
+                    <!-- Emergency Button -->
+                    <button class="emergency-trigger" id="emergency-btn">
+                        <i data-lucide="phone-call"></i>
+                        <span class="lang-txt" data-key="btn-emergency">Emergency Help</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- ========================================== -->
+            <!-- TAB 1: OVERVIEW DASHBOARD -->
+            <!-- ========================================== -->
+            <section id="overview-tab" class="view-section active">
+                <!-- Raft-Inspired Premium Hero Banner -->
+                    <div class="cc-face cc-back">
+                        <div class="card-magnetic-strip"></div>
+                        <div style="align-self:flex-end; padding:20px; text-align:right;">
+                            <div
+                                style="font-size:8px; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">
+                                CVV</div>
+                            <div id="cc-display-cvv"
+                                style="background:white; color:black; padding:4px 8px; border-radius:4px; font-family:monospace; font-weight:700; letter-spacing:1px; display:inline-block; font-size:11px;">
+                                •••</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Checkout Billing Inputs -->
+            <form id="checkout-form-fields" style="display:flex; flex-direction:column; gap:12px;">
+                <input type="hidden" id="checkout-plan-name">
+                <input type="hidden" id="checkout-plan-price">
+                <div class="form-group">
+                    <label style="font-size:12px;">Cardholder Name</label>
+                    <input type="text" class="form-input" id="cc-name-input" placeholder="e.g. Nishtha Yadav" required
+                        style="padding:8px 12px; font-size:13px;">
+                </div>
+                <div class="form-group">
+                    <label style="font-size:12px;">Card Number</label>
+                    <input type="text" class="form-input" id="cc-num-input" placeholder="4111 2222 3333 4444"
+                        maxlength="19" required style="padding:8px 12px; font-size:13px;">
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                    <div class="form-group">
+                        <label style="font-size:12px;">Expiration (MM/YY)</label>
+                        <input type="text" class="form-input" id="cc-expiry-input" placeholder="12/28" maxlength="5"
+                            required style="padding:8px 12px; font-size:13px;">
+                    </div>
+                    <div class="form-group">
+                        <label style="font-size:12px;">CVV</label>
+                        <input type="password" class="form-input" id="cc-cvv-input" placeholder="•••" maxlength="3"
+                            required style="padding:8px 12px; font-size:13px;">
+                    </div>
+                </div>
+                <button type="submit" class="gradient-btn" id="confirm-payment-btn"
+                    style="width:100%; margin-top:10px;">Pay & Align</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 4b. Wellness Magazine Reading Modal -->
+    <div class="glass-panel booking-modal" id="magazine-modal"
+        style="max-width:700px; width:95%; max-height:85vh; overflow-y:auto; display:none; flex-direction:column; padding:0;">
+        <div
+            style="padding:20px; border-bottom:1px solid var(--glass-border); display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.2);">
+            <h2 id="magazine-modal-title" style="font-size:18px; font-weight:700;">Magazine Update</h2>
+            <button class="play-sound-btn" id="close-magazine-modal-btn" style="width:36px; height:36px;"><i
+                    data-lucide="x"></i></button>
+        </div>
+        <div style="padding:25px; line-height:1.7; font-size:14.5px; color:var(--text-main); white-space:pre-wrap;"
+            id="magazine-modal-content">
+            <!-- Article content filled dynamically -->
+        </div>
+    </div>
+
+    <!-- 5. Consultation Video Call Panel -->
+    <div id="video-consultation-section">
+        <div
+            style="padding:15px 30px; background:#060813; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.05);">
+            <div>
+                <h2 id="call-panel-therapist-name" style="font-size:16px; font-weight:700;">AI Consultation Session</h2>
+                <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--text-muted);">
+                    <i data-lucide="clock" style="width:14px; height:14px;"></i>
+                    <span id="call-timer-display">00:00</span>
+                </div>
+            </div>
+            <div id="call-connection-type-indicator"
+                style="font-size:12px; background:rgba(0, 245, 212, 0.1); color:var(--primary-cyan); padding:4px 10px; border-radius:20px;">
+                AI Interactive Mode
+            </div>
+        </div>
+
+        <div class="call-grid">
+            <!-- Peer feed -->
+            <div class="call-pane">
+                <!-- Fallback Avatar or WebRTC peer stream -->
+                <video class="call-video peer-feed" id="peer-video-element" autoplay playsinline
+                    style="display:none;"></video>
+                <div id="peer-avatar-placeholder"
+                    style="width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:15px; position:absolute; top:0; left:0;">
+                    <img src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?q=80&w=256&auto=format&fit=crop"
+                        id="peer-avatar-img"
+                        style="width:120px; height:120px; border-radius:50%; object-fit:cover; border:3px solid var(--accent-purple); box-shadow: 0 0 25px rgba(123,44,191,0.5);">
+                    <span id="peer-status-text"
+                        style="font-size:14px; font-weight:600; color:var(--text-muted);">Advisor Connecting...</span>
+                    <!-- Speech wave visual overlay -->
+                    <div id="peer-speech-waves" style="display:flex; gap:4px; height:20px; align-items:center;">
+                        <span
+                            style="width:3px; height:8px; background:var(--accent-purple); border-radius:3px; animation: speechWave 0.8s infinite alternate;"></span>
+                        <span
+                            style="width:3px; height:14px; background:var(--accent-violet); border-radius:3px; animation: speechWave 0.6s infinite alternate; animation-delay:0.1s;"></span>
+                        <span
+                            style="width:3px; height:18px; background:var(--primary-cyan); border-radius:3px; animation: speechWave 0.7s infinite alternate; animation-delay:0.2s;"></span>
+                        <span
+                            style="width:3px; height:10px; background:var(--accent-purple); border-radius:3px; animation: speechWave 0.5s infinite alternate; animation-delay:0.3s;"></span>
+                    </div>
+                </div>
+                <div class="call-overlay-info" id="peer-call-name">Therapist</div>
+            </div>
+
+            <!-- Self feed -->
+            <div class="call-pane">
+                <video class="call-video" id="self-video-element" autoplay muted playsinline></video>
+                <div id="self-video-placeholder"
+                    style="width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; position:absolute; top:0; left:0; background:#070810;">
+                    <i data-lucide="video-off" style="width:48px; height:48px; color:var(--text-muted);"></i>
+                    <span style="font-size:12px; color:var(--text-muted);">Camera is off</span>
+                </div>
+                <div class="call-overlay-info">You (Self Feed)</div>
+            </div>
+        </div>
+
+        <div class="call-actions-bar">
+            <button class="call-btn" id="call-toggle-mic-btn"><i data-lucide="mic"></i></button>
+            <button class="call-btn" id="call-toggle-video-btn"><i data-lucide="video-off"></i></button>
+            <button class="call-btn" id="call-toggle-share-btn"><i data-lucide="screen-share"></i></button>
+            <!-- WebRTC Peer Connection share button -->
+            <button class="call-btn" id="call-p2p-setup-btn" title="Setup Peer Connection"><i
+                    data-lucide="link"></i></button>
+            <button class="call-btn hangup" id="call-hangup-btn"><i data-lucide="phone-off"></i></button>
+        </div>
+    </div>
+
+    <!-- Audio assets for safe space and meditation (fallbacks) -->
+    <audio id="audio-rain" loop src="https://assets.mixkit.co/active_storage/sfx/2458/2458-84.wav"></audio>
+    <audio id="audio-forest" loop src="https://assets.mixkit.co/active_storage/sfx/1203/1203-84.wav"></audio>
+    <audio id="audio-ocean" loop src="https://assets.mixkit.co/active_storage/sfx/1183/1183-84.wav"></audio>
+    <audio id="audio-noise" loop src="https://assets.mixkit.co/active_storage/sfx/2566/2566-84.wav"></audio>
+    <audio id="bg-audio-music" loop src="ambient_bg.mp3"></audio>
+
+    <!-- Leaflet Map JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- JS Modules -->
+    <script src="js/app.js"></script>
+    <script src="js/chatbot.js"></script>
+    <script src="js/journal.js"></script>
+    <script src="js/appointment.js"></script>
+    <script src="js/student.js"></script>
+    <script src="js/community.js"></script>
+    <script src="js/assessment.js"></script>
+    <script src="js/subscription.js"></script>
+
+</body>
+
+</html>

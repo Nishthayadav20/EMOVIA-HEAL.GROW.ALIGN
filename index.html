@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emovia - Heal & Align</title>
+    <!-- Leaflet Map CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- CSS File -->
+    <link rel="stylesheet" href="css/style.css?v=happyminds-theme-v7">
+</head>
+
+<body>
+
+    <!-- Video Background Container (Disabled for clean light soothing theme)
+    <div id="video-bg-container">
+        <video autoplay muted loop playsinline id="bg-video">
+            <source
+                src="https://player.vimeo.com/external/371433846.sd.mp4?s=236da2f3c0548a73feeb6c245903b413152db4b4&profile_id=139&oauth2_token_id=57447761"
+                type="video/mp4">
+        </video>
+    </div>
+    -->
+
+    <!-- Canvas Gradient Fallback (Used if video fails to load or browser blocks it) -->
+    <canvas id="fallback-canvas"></canvas>
+
+    <!-- Fine ambient radial gradient overlay -->
+    <div id="overlay-gradient"></div>
+
+    <!-- Starting Page Splash Screen -->
+    <div id="splash-landing">
+        <div id="splash-video-container">
+            <video autoplay muted loop playsinline id="splash-video">
+                <source src="meditation_bg.mp4" type="video/mp4">
+            </video>
+            <div class="splash-video-overlay"></div>
+        </div>
+        <div class="splash-text-container">
+            <h1 class="splash-brand-title">Emovia</h1>
+            <p class="splash-brand-tagline">Heal. Grow. Align.</p>
+        </div>
+        <div class="splash-scroll-indicator" id="splash-scroll-indicator">
+            <i data-lucide="chevron-down" style="stroke-width: 3.5; width: 36px; height: 36px;"></i>
+        </div>
+    </div>
+
+    <div id="app-shell">
+        <!-- Sidebar Shell -->
+        <aside id="sidebar" class="glass-panel">
+            <div class="brand">
+                <div class="brand-icon">
+                    <i data-lucide="sparkles" style="color: white;"></i>
+                </div>
+                <span class="brand-name"
+                    style="background: linear-gradient(120deg, var(--primary-cyan) 30%, var(--accent-purple) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800;">Emovia</span>
+            </div>
+
+                                    <ul class="nav-menu">
+                <li class="nav-item active" onclick="window.location.href='index.html'">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span class="lang-txt" data-key="menu-overview">Overview</span>
+                </li>
+                <li class="nav-item" onclick="window.location.href='companion.html'">
+                    <i data-lucide="smile"></i>
+                    <span class="lang-txt" data-key="menu-companion">AI Companion</span>
+                </li>
+                <li class="nav-item" onclick="window.location.href='journal.html'">
+                    <i data-lucide="book-open"></i>
+                    <span class="lang-txt" data-key="menu-journal">Private Journal</span>
+                </li>
+                <li class="nav-item" onclick="window.location.href='bookings.html'">
+                    <i data-lucide="calendar"></i>
+                    <span class="lang-txt" data-key="menu-bookings">Therapy Desk</span>
+                </li>
+                <li class="nav-item" onclick="window.location.href='mind.html'">
+                    <i data-lucide="wind"></i>
+                    <span class="lang-txt" data-key="menu-mind">Mind & Yoga</span>
+                </li>
+                <li class="nav-item" onclick="window.location.href='student.html'">
+                    <i data-lucide="graduation-cap"></i>
+                    <span class="lang-txt" data-key="menu-student">Student Desk</span>
+                </li>
+                <li class="nav-item" onclick="window.location.href='community.html'">
+                    <i data-lucide="users"></i>
+                    <span class="lang-txt" data-key="menu-community">Social Circle & Blogs</span>
+                </li>
+                <li class="nav-item" onclick="window.location.href='diagnostics.html'">
+                    <i data-lucide="clipboard-check"></i>
+                    <span class="lang-txt" data-key="menu-diagnostics">Diagnostics</span>
+                </li>
+                <li class="nav-item" onclick="window.location.href='subscription.html'" style="margin-top: 15px; border: 1px solid rgba(255,215,0,0.25);">
+                    <i data-lucide="crown" style="color: #ffd700;"></i>
+                    <span class="lang-txt" data-key="menu-premium" style="color: #ffd700; font-weight:600;">Upgrade to Zen</span>
+                </li>
+            </ul>
+
+            <!-- User Panel Card -->
+            <div class="user-widget">
+                <div class="user-avatar-container">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256&auto=format&fit=crop"
+                        alt="User Avatar" class="user-avatar" id="app-user-avatar">
+                    <div class="premium-badge" id="app-premium-badge">
+                        <i class="lucide-crown">★</i>
+                    </div>
+                </div>
+                <div class="user-info">
+                    <div class="user-name" id="app-user-name">Guest Explorer</div>
+                    <div class="user-status" id="app-user-tier">Standard Plan</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Viewport Area -->
+        <main id="main-viewport">
+            <header class="header-wrapper">
+                <div class="welcome-box">
+                    <h1 id="welcome-title">Emovia welcomes you</h1>
+                    <p id="welcome-sub">Let's prioritize your mental wellness today.</p>
+                </div>
+                <div class="top-actions">
+                    <button class="lang-select-btn" id="bg-music-toggle-btn" title="Toggle background music"
+                        style="padding: 12px; border-radius: 50%; width: 44px; height: 44px; justify-content: center; align-items: center; display: inline-flex; flex-shrink: 0;">
+                        <i data-lucide="volume-2" id="bg-music-icon" style="width: 18px; height: 18px;"></i>
+                    </button>
+                    <button class="lang-select-btn" id="lang-btn">
+                        <i data-lucide="languages"></i>
+                        <span>English</span>
+                    </button>
+                    <!-- Emergency Button -->
+                    <button class="emergency-trigger" id="emergency-btn">
+                        <i data-lucide="phone-call"></i>
+                        <span class="lang-txt" data-key="btn-emergency">Emergency Help</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- ========================================== -->
+            <!-- TAB 1: OVERVIEW DASHBOARD -->
+            <!-- ========================================== -->
+            <section id="overview-tab" class="view-section active">
+                <!-- Raft-Inspired Premium Hero Banner -->
+                <div class="glass-panel emovia-raft-hero"
+                    style="padding: 35px 30px; margin-bottom: 25px; background: #ffffff; border-color: var(--glass-border); position: relative; overflow: hidden; border-radius: 28px;">
+
+                    <!-- Giant Heading -->
+                    <div style="text-align: center; margin-bottom: 30px; position: relative; z-index: 2;">
+                        <h1 class="raft-title"
+                            style="font-size: 38px; font-weight: 800; color: var(--text-main); font-family: 'Outfit', sans-serif; line-height: 1.2; display: inline-flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;">
+                            Your Mental Health <span
+                                style="background: linear-gradient(135deg, var(--primary-cyan), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Matters</span>
+                            <span class="raft-star"
+                                style="color: #ffd700; font-size: 32px; animation: pulse 2s infinite; display: inline-block;">✦</span>
+                        </h1>
+                    </div>
+
+                    <!-- Inner Grid Layout -->
+                    <div class="raft-hero-grid"
+                        style="display: grid; grid-template-columns: 1fr 1.2fr 1fr; gap: 24px; align-items: center;">
+
+                        <!-- Left Side elements -->
+                        <div style="display: flex; flex-direction: column; gap: 25px; z-index: 2;">
+                            <!-- Circular Stamp style -->
+                            <div class="circular-stamp-wrap"
+                                style="position: relative; width: 100px; height: 100px; margin: 0 auto 10px 0;">
+                                <div class="circular-stamp-text"
+                                    style="position: absolute; width: 100%; height: 100%; animation: rotateStamp 20s infinite linear; font-size: 8px; font-weight: bold; color: var(--text-muted); text-transform: uppercase;">
+                                    <svg viewBox="0 0 100 100" style="width: 100%; height: 100%;">
+                                        <path id="stampPath" d="M 50,50 m -37,0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0"
+                                            fill="none"></path>
+                                        <text>
+                                            <textPath href="#stampPath"
+                                                style="fill: var(--text-muted); font-size: 6.8px; letter-spacing: 1px;">
+                                                • CHAT WITH A CONSULTANT • WE GOT YOU </textPath>
+                                        </text>
+                                    </svg>
+                                </div>
+                                <div
+                                    style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 42px; height: 42px; border-radius: 50%; background: var(--bg-base); display: flex; align-items: center; justify-content: center; border: 1px solid var(--glass-border); box-shadow: 0 4px 10px rgba(0,0,0,0.02);">
+                                    <i data-lucide="sparkles"
+                                        style="color: var(--primary-cyan); width: 18px; height: 18px;"></i>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h3
+                                    style="font-size: 18px; font-weight: 700; color: var(--text-main); line-height: 1.4; margin-bottom: 8px;">
+                                    You <span style="color: var(--primary-cyan);">don't</span> have to <span
+                                        style="text-decoration: underline; text-decoration-color: var(--accent-purple); text-underline-offset: 4px;">struggle</span>
+                                    in silence!
+                                </h3>
+                                <a href="javascript:void(0);"
+                                    onclick="window.location.href='companion.html';"
+                                    style="font-size: 11px; font-weight: 700; letter-spacing: 1px; color: var(--primary-cyan); text-transform: uppercase; text-decoration: none; border-bottom: 2px solid var(--primary-cyan); padding-bottom: 2px; display: inline-block;">Learn
+                                    More</a>
+                            </div>
+
+                            <!-- Audio mini-player -->
+                            <div
+                                style="display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-base); border-radius: 16px; border: 1px solid var(--glass-border);">
+                                <button class="play-sound-btn"
+                                    onclick="document.querySelector('.med-audio-trigger').click();"
+                                    style="width: 36px; height: 36px; border-radius: 50%; background: var(--primary-cyan); color: white; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink:0;">
+                                    <i data-lucide="play" style="width: 16px; height: 16px;"></i>
+                                </button>
+                                <div style="flex: 1;">
+                                    <div
+                                        style="font-size: 10px; font-weight: 700; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.5px;">
+                                        Breathe Waves</div>
+                                    <div
+                                        style="display: flex; gap: 3px; align-items: center; margin-top: 4px; height: 12px;">
+                                        <span
+                                            style="width: 2px; height: 6px; background: var(--primary-cyan); border-radius: 1px; animation: soundWavePulse 1.2s infinite ease-in-out;"></span>
+                                        <span
+                                            style="width: 2px; height: 12px; background: var(--primary-cyan); border-radius: 1px; animation: soundWavePulse 1.2s infinite ease-in-out 0.2s;"></span>
+                                        <span
+                                            style="width: 2px; height: 8px; background: var(--primary-cyan); border-radius: 1px; animation: soundWavePulse 1.2s infinite ease-in-out 0.4s;"></span>
+                                        <span
+                                            style="width: 2px; height: 10px; background: var(--primary-cyan); border-radius: 1px; animation: soundWavePulse 1.2s infinite ease-in-out 0.1s;"></span>
+                                        <span
+                                            style="width: 2px; height: 4px; background: var(--primary-cyan); border-radius: 1px; animation: soundWavePulse 1.2s infinite ease-in-out 0.3s;"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Center Illustration -->
+                        <div style="text-align: center; position: relative; z-index: 1;">
+                            <img src="mental_health_hero.png" alt="Emovia Meditation Vector"
+                                style="max-width: 100%; height: auto; max-height: 260px; object-fit: contain; filter: drop-shadow(0 15px 30px rgba(43, 115, 151, 0.12)); border-radius: 20px;">
+                        </div>
+
+                        <!-- Right Side elements -->
+                        <div style="display: flex; flex-direction: column; gap: 24px; z-index: 2;">
+                            <!-- overlapping circles indicator -->
+                            <div style="display: flex; gap: 12px; align-items: flex-start;">
+                                <div
+                                    style="position: relative; width: 44px; height: 32px; flex-shrink: 0; margin-top: 2px;">
+                                    <div
+                                        style="width: 24px; height: 24px; border-radius: 50%; background: #ffffff; border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); position: absolute; left: 0; top: 0; z-index: 2; font-size:12px;">
+                                        🧠
+                                    </div>
+                                    <div
+                                        style="width: 24px; height: 24px; border-radius: 50%; background: var(--text-main); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.15); position: absolute; right: 0; bottom: 0; z-index: 1; font-size:10px; color:white;">
+                                        ✨
+                                    </div>
+                                </div>
+                                <p
+                                    style="font-size: 12.5px; font-weight: 600; color: var(--text-main); line-height: 1.4;">
+                                    There's <strong>hope</strong> when your <strong>brain</strong> tells you there
+                                    isn't.
+                                </p>
+                            </div>
+
+                            <!-- Dictionary card -->
+                            <div class="glass-panel"
+                                style="padding: 16px; background: var(--bg-base); border-color: var(--glass-border); border-radius: 18px; border-left: 4px solid var(--primary-cyan); box-shadow: none;">
+                                <div style="display: flex; align-items: baseline; gap: 6px; margin-bottom: 6px;">
+                                    <strong
+                                        style="font-size: 14px; color: var(--text-main); font-weight: 800;">Heal</strong>
+                                    <span style="font-size: 10px; color: var(--text-muted); font-style: italic;">/ hi:l
+                                        /</span>
+                                </div>
+                                <p style="font-size: 11.5px; color: var(--text-muted); line-height: 1.45;">
+                                    To become sound or healthy again; alleviate distress or anxiety in a gentle, caring
+                                    dashboard environment.
+                                </p>
+                            </div>
+
+                            <!-- CTA Book -->
+                            <button class="gradient-btn"
+                                style="padding: 11px; font-size: 12px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%;"
+                                onclick="window.location.href='bookings.html';">
+                                <i data-lucide="calendar" style="width:16px; height:16px;"></i> Talk to a Counselor
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- User-Friendly Interactive Mental Health Tips Card -->
+                <div class="glass-panel"
+                    style="padding: 18px 24px; margin-bottom: 25px; background: #ffffff; border-color: var(--glass-border); border-radius: 20px; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 280px; display: flex; gap: 15px; align-items: center;">
+                        <div
+                            style="width: 42px; height: 42px; border-radius: 12px; background: rgba(50, 149, 157, 0.1); color: var(--accent-purple); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 20px; box-shadow: 0 4px 10px rgba(50,149,157,0.05);">
+                            💡
+                        </div>
+                        <div>
+                            <h4
+                                style="font-size: 11px; font-weight: 700; color: var(--accent-purple); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">
+                                Self-Care Tip of the Day</h4>
+                            <p id="daily-tip-text"
+                                style="font-size: 13.5px; font-weight: 600; color: var(--text-main); line-height: 1.45; transition: all 0.25s ease;">
+                                Take 5 slow, deep breaths. Inhale for 4 seconds, hold for 4, and exhale for 4 to
+                                instantly calm your body.
+                            </p>
+                        </div>
+                    </div>
+                    <button class="lang-select-btn" id="next-tip-btn"
+                        style="padding: 10px 18px; font-size: 12px; border-radius: 12px; display: flex; align-items: center; gap: 6px; border-color: var(--glass-border-hover); background: var(--bg-base); flex-shrink: 0;">
+                        <i data-lucide="refresh-cw" style="width: 14px; height: 14px;"></i> Get Another Tip
+                    </button>
+                </div>
+
+                <!-- Issue Concern Category Pill Selector -->
+                <div style="margin-bottom: 25px;">
+                    <h3
+                        style="font-size: 14px; font-weight: 700; color: var(--text-main); margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
+                        <i data-lucide="heart" style="color: var(--accent-red); width: 16px; height: 16px;"></i> What's
+                        on your mind? Select a concern:
+                    </h3>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;" id="overview-concern-selector">
+                        <button class="lang-select-btn concern-pill"
+                            onclick="window.location.href='bookings.html';"
+                            style="padding: 8px 16px; font-size: 12.5px; border-radius: 20px; border-color: rgba(13, 148, 136, 0.15); background: white;">
+                            🤝 Relationship Issues
+                        </button>
+                        <button class="lang-select-btn concern-pill"
+                            onclick="window.location.href='student.html';"
+                            style="padding: 8px 16px; font-size: 12.5px; border-radius: 20px; border-color: rgba(13, 148, 136, 0.15); background: white;">
+                            📚 Exam & Semester Stress
+                        </button>
+                        <button class="lang-select-btn concern-pill"
+                            onclick="window.location.href='diagnostics.html';"
+                            style="padding: 8px 16px; font-size: 12.5px; border-radius: 20px; border-color: rgba(13, 148, 136, 0.15); background: white;">
+                            😰 Anxiety & Panic Relief
+                        </button>
+                        <button class="lang-select-btn concern-pill"
+                            onclick="window.location.href='bookings.html';"
+                            style="padding: 8px 16px; font-size: 12.5px; border-radius: 20px; border-color: rgba(13, 148, 136, 0.15); background: white;">
+                            💼 Career & Placement Guidance
+                        </button>
+                        <button class="lang-select-btn concern-pill"
+                            onclick="window.location.href='mind.html';"
+                            style="padding: 8px 16px; font-size: 12.5px; border-radius: 20px; border-color: rgba(13, 148, 136, 0.15); background: white;">
+                            🧘 Mindfulness & Deep Focus
+                        </button>
+                    </div>
+                </div>
+
+                <div class="metrics-row">
+                    <div class="metric-card glass-panel tilt-card">
+                        <div class="metric-icon-box"
+                            style="background: rgba(0, 245, 212, 0.15); color: var(--primary-cyan);">
+                            <i data-lucide="flame"></i>
+                        </div>
+                        <div class="metric-details">
+                            <h3 class="lang-txt" data-key="metric-streak">Streak Count</h3>
+                            <div class="value" id="streak-val">1 Day</div>
+                        </div>
+                    </div>
+                    <div class="metric-card glass-panel tilt-card">
+                        <div class="metric-icon-box"
+                            style="background: rgba(123, 44, 191, 0.15); color: var(--accent-violet);">
+                            <i data-lucide="hourglass"></i>
+                        </div>
+                        <div class="metric-details">
+                            <h3 class="lang-txt" data-key="metric-meditation">Mindful Mins</h3>
+                            <div class="value" id="meditation-val">0 min</div>
+                        </div>
+                    </div>
+                    <div class="metric-card glass-panel tilt-card">
+                        <div class="metric-icon-box"
+                            style="background: rgba(56, 176, 0, 0.15); color: var(--accent-green);">
+                            <i data-lucide="heart"></i>
+                        </div>
+                        <div class="metric-details">
+                            <h3 class="lang-txt" data-key="metric-mood">Mood Index</h3>
+                            <div class="value" id="mood-val">Stable</div>
+                        </div>
+                    </div>
+                    <div class="metric-card glass-panel tilt-card">
+                        <div class="metric-icon-box"
+                            style="background: rgba(247, 127, 0, 0.15); color: var(--accent-orange);">
+                            <i data-lucide="trophy"></i>
+                        </div>
+                        <div class="metric-details">
+                            <h3 class="lang-txt" data-key="metric-badges">Badges Unlocked</h3>
+                            <div class="value" id="badge-count-val">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Daily Mood Logging Panel -->
+                <div class="mood-selector-widget glass-panel">
+                    <h2 class="lang-txt" data-key="mood-log-title" style="font-size: 18px; margin-bottom: 8px;">How are
+                        you feeling right now?</h2>
+                    <p class="lang-txt" data-key="mood-log-sub" style="font-size: 13px; color: var(--text-muted);">Log
+                        your mood to see trends and personalized recommendations.</p>
+                    <div class="emoji-flex">
+                        <button class="mood-btn" data-mood="5" data-desc="Joyful">
+                            <span>😁</span>
+                            <span class="lang-txt" data-key="mood-joy">Joyful</span>
+                        </button>
+                        <button class="mood-btn" data-mood="4" data-desc="Calm">
+                            <span>😊</span>
+                            <span class="lang-txt" data-key="mood-calm">Calm</span>
+                        </button>
+                        <button class="mood-btn" data-mood="3" data-desc="Neutral">
+                            <span>😐</span>
+                            <span class="lang-txt" data-key="mood-neutral">Neutral</span>
+                        </button>
+                        <button class="mood-btn" data-mood="2" data-desc="Anxious">
+                            <span>😰</span>
+                            <span class="lang-txt" data-key="mood-anxious">Anxious</span>
+                        </button>
+                        <button class="mood-btn" data-mood="1" data-desc="Low">
+                            <span>😞</span>
+                            <span class="lang-txt" data-key="mood-low">Low Energy</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <!-- Analytics Graph -->
+                    <div class="glass-panel"
+                        style="padding: 24px; min-height: 380px; display: flex; flex-direction: column;">
+                        <h2 class="lang-txt" data-key="analytics-title" style="font-size: 18px; margin-bottom: 20px;">
+                            Emotional Analytics</h2>
+                        <div style="flex: 1; position: relative;">
+                            <canvas id="mood-trends-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Side Widgets (Breathing Circle) -->
+                    <div class="dashboard-sidebar">
+                        <div class="breathing-panel glass-panel">
+                            <h2 class="lang-txt" data-key="breathing-title"
+                                style="font-size: 18px; margin-bottom: 5px;">Breathing Assistant</h2>
+                            <p class="lang-txt" data-key="breathing-desc"
+                                style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Calm your
+                                nervous system instantly.</p>
+                            <div class="breathing-circle-wrapper">
+                                <div class="breathing-circle-outer"></div>
+                                <div class="breathing-circle-inner" id="breath-circle">
+                                    <span class="breathing-text" id="breath-status">Tap Start</span>
+                                </div>
+                            </div>
+                            <p class="breathing-instructions" id="breath-instruction">Click the circle to start
+                                breathing sequence</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid" style="grid-template-columns: 1fr 1fr;">
+                    <!-- Daily Wellness Roadmap Task List -->
+                    <div class="roadmap-card glass-panel">
+                        <h2 class="lang-txt" data-key="roadmap-title" style="font-size: 18px;">Your Daily Wellness
+                            Roadmap</h2>
+                        <p class="lang-txt" data-key="roadmap-sub"
+                            style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">Complete these
+                            customized exercises based on your profile.</p>
+                        <div class="task-list" id="wellness-tasks-list">
+                            <!-- Tasks loaded dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Virtual Safe Space sounds mixer -->
+                    <div class="safe-space-card glass-panel">
+                        <h2 class="lang-txt" data-key="safespace-title" style="font-size: 18px;">Virtual Safe Space
+                            Mixer</h2>
+                        <p class="lang-txt" data-key="safespace-sub" style="font-size: 13px; color: var(--text-muted);">
+                            Mix background nature loops to find your focus or sleep frequencies.</p>
+                        <div class="sounds-list">
+                            <div class="sound-control-node" id="sound-rain">
+                                <div class="sound-header">
+                                    <span class="sound-name"><i data-lucide="cloud-rain"></i> Rainy Day</span>
+                                    <button class="play-sound-btn" data-sound="rain"><i data-lucide="play"></i></button>
+                                </div>
+                                <input type="range" class="sound-vol-slider" min="0" max="1" step="0.05" value="0.5">
+                            </div>
+                            <div class="sound-control-node" id="sound-forest">
+                                <div class="sound-header">
+                                    <span class="sound-name"><i data-lucide="trees"></i> Calm Forest</span>
+                                    <button class="play-sound-btn" data-sound="forest"><i
+                                            data-lucide="play"></i></button>
+                                </div>
+                                <input type="range" class="sound-vol-slider" min="0" max="1" step="0.05" value="0.5">
+                            </div>
+                            <div class="sound-control-node" id="sound-ocean">
+                                <div class="sound-header">
+                                    <span class="sound-name"><i data-lucide="waves"></i> Ocean Waves</span>
+                                    <button class="play-sound-btn" data-sound="ocean"><i
+                                            data-lucide="play"></i></button>
+                                </div>
+                                <input type="range" class="sound-vol-slider" min="0" max="1" step="0.05" value="0.5">
+                            </div>
+                            <div class="sound-control-node" id="sound-noise">
+                                <div class="sound-header">
+                                    <span class="sound-name"><i data-lucide="activity"></i> Pink Noise</span>
+                                    <button class="play-sound-btn" data-sound="noise"><i
+                                            data-lucide="play"></i></button>
+                                </div>
+                                <input type="range" class="sound-vol-slider" min="0" max="1" step="0.05" value="0.5">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rewards / Badges Showcase -->
+                <div class="badges-showcase glass-panel" style="margin-top: 24px;">
+                    <h2 class="lang-txt" data-key="badges-title" style="font-size: 18px;">Your Self-Care Badges</h2>
+                    <div class="badges-grid" id="badges-container">
+                        <div class="badge-item" id="badge-first-step">
+                            <div class="badge-icon">👣</div>
+                            <div class="badge-name">First Step</div>
+                            <div class="badge-desc">Logged your first daily mood</div>
+                        </div>
+                        <div class="badge-item" id="badge-zen-master">
+                            <div class="badge-icon">🧘</div>
+                            <div class="badge-name">Zen Master</div>
+                            <div class="badge-desc">Completed a breathing cycle</div>
+                        </div>
+                        <div class="badge-item" id="badge-scribe">
+                            <div class="badge-icon">✍️</div>
+                            <div class="badge-name">Soul Scribe</div>
+                            <div class="badge-desc">Saved your first journal entry</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emovia - Heal & Align</title>
+    <!-- Leaflet Map CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- CSS File -->
+    <link rel="stylesheet" href="css/style.css?v=happyminds-theme-v7">
+</head>
+
+<body>
+
+    <!-- Video Background Container (Disabled for clean light soothing theme)
+    <div id="video-bg-container">
+        <video autoplay muted loop playsinline id="bg-video">
+            <source
+                src="https://player.vimeo.com/external/371433846.sd.mp4?s=236da2f3c0548a73feeb6c245903b413152db4b4&profile_id=139&oauth2_token_id=57447761"
+                type="video/mp4">
+        </video>
+    </div>
+    -->
+
+    <!-- Canvas Gradient Fallback (Used if video fails to load or browser blocks it) -->
+    <canvas id="fallback-canvas"></canvas>
+
+    <!-- Fine ambient radial gradient overlay -->
+    <div id="overlay-gradient"></div>
+
+    <!-- Starting Page Splash Screen -->
+    <div id="app-shell">
+        <!-- Sidebar Shell -->
+        <aside id="sidebar" class="glass-panel">
+            <div class="brand">
+                <div class="brand-icon">
+                    <i data-lucide="sparkles" style="color: white;"></i>
+                </div>
+                <span class="brand-name"
+                    style="background: linear-gradient(120deg, var(--primary-cyan) 30%, var(--accent-purple) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800;">Emovia</span>
+            </div>
+
+                                    <ul class="nav-menu">
+                <li class="nav-item" onclick="window.location.href='index.html'">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span class="lang-txt" data-key="menu-overview">Overview</span>
+                </li>
+                <li class="nav-item" onclick="window.location.href='companion.html'">
+                    <i data-lucide="smile"></i>
+                    <span class="lang-txt" data-key="menu-companion">AI Companion</span>
+                </li>
+                <li class="nav-item active" onclick="window.location.href='journal.html'">
+                    <i data-lucide="book-open"></i>
+                    <span class="lang-txt" data-key="menu-journal">Private Journal</span>
+                </li>
+                <li class="nav-item" onclick="window.location.href='bookings.html'">
+                    <i data-lucide="calendar"></i>
+                    <span class="lang-txt" data-key="menu-bookings">Therapy Desk</span>
+                </li>
+                <li class="nav-item" onclick="window.location.href='mind.html'">
+                    <i data-lucide="wind"></i>
+                    <span class="lang-txt" data-key="menu-mind">Mind & Yoga</span>
+                </li>
+                <li class="nav-item" onclick="window.location.href='student.html'">
+                    <i data-lucide="graduation-cap"></i>
+                    <span class="lang-txt" data-key="menu-student">Student Desk</span>
+                </li>
+                <li class="nav-item" onclick="window.location.href='community.html'">
+                    <i data-lucide="users"></i>
+                    <span class="lang-txt" data-key="menu-community">Social Circle & Blogs</span>
+                </li>
+                <li class="nav-item" onclick="window.location.href='diagnostics.html'">
+                    <i data-lucide="clipboard-check"></i>
+                    <span class="lang-txt" data-key="menu-diagnostics">Diagnostics</span>
+                </li>
+                <li class="nav-item" onclick="window.location.href='subscription.html'" style="margin-top: 15px; border: 1px solid rgba(255,215,0,0.25);">
+                    <i data-lucide="crown" style="color: #ffd700;"></i>
+                    <span class="lang-txt" data-key="menu-premium" style="color: #ffd700; font-weight:600;">Upgrade to Zen</span>
+                </li>
+            </ul>
+
+            <!-- User Panel Card -->
+            <div class="user-widget">
+                <div class="user-avatar-container">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256&auto=format&fit=crop"
+                        alt="User Avatar" class="user-avatar" id="app-user-avatar">
+                    <div class="premium-badge" id="app-premium-badge">
+                        <i class="lucide-crown">★</i>
+                    </div>
+                </div>
+                <div class="user-info">
+                    <div class="user-name" id="app-user-name">Guest Explorer</div>
+                    <div class="user-status" id="app-user-tier">Standard Plan</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Viewport Area -->
+        <main id="main-viewport">
+            <header class="header-wrapper">
+                <div class="welcome-box">
+                    <h1 id="welcome-title">Emovia welcomes you</h1>
+                    <p id="welcome-sub">Let's prioritize your mental wellness today.</p>
+                </div>
+                <div class="top-actions">
+                    <button class="lang-select-btn" id="bg-music-toggle-btn" title="Toggle background music"
+                        style="padding: 12px; border-radius: 50%; width: 44px; height: 44px; justify-content: center; align-items: center; display: inline-flex; flex-shrink: 0;">
+                        <i data-lucide="volume-2" id="bg-music-icon" style="width: 18px; height: 18px;"></i>
+                    </button>
+                    <button class="lang-select-btn" id="lang-btn">
+                        <i data-lucide="languages"></i>
+                        <span>English</span>
+                    </button>
+                    <!-- Emergency Button -->
+                    <button class="emergency-trigger" id="emergency-btn">
+                        <i data-lucide="phone-call"></i>
+                        <span class="lang-txt" data-key="btn-emergency">Emergency Help</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- ========================================== -->
+            <!-- TAB 1: OVERVIEW DASHBOARD -->
+            <!-- ========================================== -->
+            <section id="overview-tab" class="view-section active">
+                <!-- Raft-Inspired Premium Hero Banner -->
+        </div>
+    </div>
+
+    <!-- 2. Therapist Booking Form Modal -->
+    <div class="glass-panel booking-modal" id="booking-form-modal">
+        <div style="padding:20px; border-bottom:1px solid var(--glass-border);">
+            <h2 style="font-size:18px; font-weight:700;" id="booking-modal-title">Schedule a Consultation</h2>
+        </div>
+        <form class="appointment-form" id="actual-booking-form">
+            <input type="hidden" id="booking-therapist-id">
+            <div class="form-group">
+                <label>Therapist Selected</label>
+                <input type="text" class="form-input" id="booking-therapist-name" readonly style="opacity:0.7;">
+            </div>
+            <div class="form-group">
+                <label>Select Date</label>
+                <input type="date" class="form-input" id="booking-date" required>
+            </div>
+            <div class="form-group">
+                <label>Select Time Slot</label>
+                <select class="form-input" id="booking-time" required style="background:#0c0f20; color:white;">
+                    <option value="10:00 AM">10:00 AM</option>
+                    <option value="11:30 AM">11:30 AM</option>
+                    <option value="02:00 PM">02:00 PM</option>
+                    <option value="04:30 PM">04:30 PM</option>
+                    <option value="06:00 PM">06:00 PM</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Consultation Channel</label>
+                <select class="form-input" id="booking-type" required style="background:#0c0f20; color:white;">
+                    <option value="Video">Video Call</option>
+                    <option value="Audio">Audio Call</option>
+                    <option value="Chat">Interactive Chat</option>
+                </select>
+            </div>
+            <div style="display:flex; gap:15px; margin-top:25px;">
+                <button type="submit" class="gradient-btn" style="flex:1;">Confirm Booking</button>
+                <button type="button" class="lang-select-btn" id="close-booking-modal-btn">Cancel</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- 3. ZenMap Meditation Center Finder Map Modal -->
+    <div class="glass-panel" id="map-modal"
+        style="max-width:800px; width:95%; height:90vh; display:none; flex-direction:column; padding:0; overflow:hidden; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); z-index:100; opacity:1 !important;">
+        <div
+            style="padding:15px 20px; border-bottom:1px solid var(--glass-border); display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.2);">
+            <div>
+                <h2 style="font-size:18px; font-weight:700; display:flex; align-items:center; gap:8px;"><i
+                        data-lucide="map-pin" style="color:var(--primary-cyan);"></i> ZenMap Finder</h2>
+                <p style="font-size:11px; color:var(--text-muted);">Showing local meditation and mindfulness centers in
+                    Delhi/NCR (Mock Locations).</p>
+            </div>
+            <button class="play-sound-btn" id="close-map-modal-btn" style="width:36px; height:36px;"><i
+                    data-lucide="x"></i></button>
+        </div>
+
+        <!-- Manual Location Search & Range Filter Bar -->
+        <div
+            style="display:flex; gap:12px; padding:12px 20px; background:rgba(12,15,32,0.7); border-bottom:1px solid var(--glass-border); align-items:center; flex-wrap:wrap; z-index: 10;">
+            <div style="position:relative; flex:1; min-width:200px;">
+                <i data-lucide="search"
+                    style="position:absolute; left:12px; top:50%; transform:translateY(-50%); width:16px; height:16px; color:var(--text-muted);"></i>
+                <input type="text" id="map-search-input" placeholder="Type city/area (e.g. Noida, Delhi, Mumbai)..."
+                    style="width:100%; padding:10px 15px 10px 38px; background:rgba(6,9,25,0.8); border:1px solid var(--glass-border); border-radius:8px; color:white; font-size:13px; outline:none; transition:border-color 0.2s;">
+            </div>
+            <button class="gradient-btn" id="map-search-btn"
+                style="padding:0 18px; font-size:13px; border-radius:8px; display:flex; align-items:center; gap:6px; cursor:pointer; height:38px; line-height:38px; border:none; transition:var(--transition-fast);">
+                <i data-lucide="search" style="width:14px; height:14px;"></i> Search
+            </button>

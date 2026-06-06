@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emovia - Heal & Align</title>
+    <!-- Leaflet Map CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- CSS File -->
+    <link rel="stylesheet" href="css/style.css?v=happyminds-theme-v7">
+</head>
+
+<body>
+
+    <!-- Video Background Container (Disabled for clean light soothing theme)
+    <div id="video-bg-container">
+        <video autoplay muted loop playsinline id="bg-video">
+            <source
+                src="https://player.vimeo.com/external/371433846.sd.mp4?s=236da2f3c0548a73feeb6c245903b413152db4b4&profile_id=139&oauth2_token_id=57447761"
+                type="video/mp4">
+        </video>
+    </div>
+    -->
+
+    <!-- Canvas Gradient Fallback (Used if video fails to load or browser blocks it) -->
+    <canvas id="fallback-canvas"></canvas>
+
+    <!-- Fine ambient radial gradient overlay -->
+    <div id="overlay-gradient"></div>
+
+    <!-- Starting Page Splash Screen -->
+    <div id="app-shell">
+        <!-- Sidebar Shell -->
+        <aside id="sidebar" class="glass-panel">
+            <div class="brand">
+                <div class="brand-icon">
+                    <i data-lucide="sparkles" style="color: white;"></i>
+                </div>
+                <span class="brand-name"
+                    style="background: linear-gradient(120deg, var(--primary-cyan) 30%, var(--accent-purple) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800;">Emovia</span>
+            </div>
+
+                                    <ul class="nav-menu">
+                <li class="nav-item" onclick="window.location.href='index.html'">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span class="lang-txt" data-key="menu-overview">Overview</span>
+                </li>
+                <li class="nav-item" onclick="window.location.href='companion.html'">
+                    <i data-lucide="smile"></i>
+                    <span class="lang-txt" data-key="menu-companion">AI Companion</span>
+                </li>
+                <li class="nav-item" onclick="window.location.href='journal.html'">
+                    <i data-lucide="book-open"></i>
+                    <span class="lang-txt" data-key="menu-journal">Private Journal</span>
+                </li>
+                <li class="nav-item active" onclick="window.location.href='bookings.html'">
+                    <i data-lucide="calendar"></i>
+                    <span class="lang-txt" data-key="menu-bookings">Therapy Desk</span>
+                </li>
+                <li class="nav-item" onclick="window.location.href='mind.html'">
+                    <i data-lucide="wind"></i>
+                    <span class="lang-txt" data-key="menu-mind">Mind & Yoga</span>
+                </li>
+                <li class="nav-item" onclick="window.location.href='student.html'">
+                    <i data-lucide="graduation-cap"></i>
+                    <span class="lang-txt" data-key="menu-student">Student Desk</span>
+                </li>
+                <li class="nav-item" onclick="window.location.href='community.html'">
+                    <i data-lucide="users"></i>
+                    <span class="lang-txt" data-key="menu-community">Social Circle & Blogs</span>
+                </li>
+                <li class="nav-item" onclick="window.location.href='diagnostics.html'">
+                    <i data-lucide="clipboard-check"></i>
+                    <span class="lang-txt" data-key="menu-diagnostics">Diagnostics</span>
+                </li>
+                <li class="nav-item" onclick="window.location.href='subscription.html'" style="margin-top: 15px; border: 1px solid rgba(255,215,0,0.25);">
+                    <i data-lucide="crown" style="color: #ffd700;"></i>
+                    <span class="lang-txt" data-key="menu-premium" style="color: #ffd700; font-weight:600;">Upgrade to Zen</span>
+                </li>
+            </ul>
+
+            <!-- User Panel Card -->
+            <div class="user-widget">
+                <div class="user-avatar-container">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256&auto=format&fit=crop"
+                        alt="User Avatar" class="user-avatar" id="app-user-avatar">
+                    <div class="premium-badge" id="app-premium-badge">
+                        <i class="lucide-crown">★</i>
+                    </div>
+                </div>
+                <div class="user-info">
+                    <div class="user-name" id="app-user-name">Guest Explorer</div>
+                    <div class="user-status" id="app-user-tier">Standard Plan</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Viewport Area -->
+        <main id="main-viewport">
+            <header class="header-wrapper">
+                <div class="welcome-box">
+                    <h1 id="welcome-title">Emovia welcomes you</h1>
+                    <p id="welcome-sub">Let's prioritize your mental wellness today.</p>
+                </div>
+                <div class="top-actions">
+                    <button class="lang-select-btn" id="bg-music-toggle-btn" title="Toggle background music"
+                        style="padding: 12px; border-radius: 50%; width: 44px; height: 44px; justify-content: center; align-items: center; display: inline-flex; flex-shrink: 0;">
+                        <i data-lucide="volume-2" id="bg-music-icon" style="width: 18px; height: 18px;"></i>
+                    </button>
+                    <button class="lang-select-btn" id="lang-btn">
+                        <i data-lucide="languages"></i>
+                        <span>English</span>
+                    </button>
+                    <!-- Emergency Button -->
+                    <button class="emergency-trigger" id="emergency-btn">
+                        <i data-lucide="phone-call"></i>
+                        <span class="lang-txt" data-key="btn-emergency">Emergency Help</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- ========================================== -->
+            <!-- TAB 1: OVERVIEW DASHBOARD -->
+            <!-- ========================================== -->
+            <section id="overview-tab" class="view-section active">
+                <!-- Raft-Inspired Premium Hero Banner -->
+                    style="width:80px; accent-color:var(--primary-cyan); cursor:pointer;">
+                <span id="map-range-val"
+                    style="font-size:12px; font-weight:700; color:var(--primary-cyan); min-width:40px;">10 km</span>
+            </div>
+        </div>
+
+        <div style="display:flex; flex:1; overflow:hidden; position:relative;">
+            <div id="zen-map-element" style="flex:1; height:100%; z-index:1;"></div>
+            <div style="width:280px; height:100%; border-left:1px solid var(--glass-border); background:rgba(6,9,25,0.9); overflow-y:auto; padding:15px; display:flex; flex-direction:column; gap:12px;"
+                id="map-sidebar-list">
+
+                <div
+                    style="font-size:13px; font-weight:700; color:white; margin-bottom:2px; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:5px;">
+                    Nearby Centres</div>
+
+                <!-- Category Tabs to filter -->
+                <div class="map-filter-tab-container" style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:5px;">
+                    <button class="map-filter-tab active" data-category="all">All</button>
+                    <button class="map-filter-tab" data-category="meditation">Zen</button>
+                    <button class="map-filter-tab" data-category="yoga">Yoga</button>
+                    <button class="map-filter-tab" data-category="therapy">Clinic</button>
+                </div>
+
+                <div id="map-sidebar-results-container" style="display:flex; flex-direction:column; gap:12px;">
+                    <!-- Location Cards Loaded dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Premium Checkout modal (with 3D flipping card) -->
+    <div class="glass-panel checkout-modal" id="checkout-form-modal">
+        <div
+            style="padding:20px; border-bottom:1px solid var(--glass-border); display:flex; justify-content:space-between; align-items:center;">
+            <h2 style="font-size:18px; font-weight:700;">Checkout Zen Plan</h2>
+            <button class="play-sound-btn" id="close-checkout-modal-btn" style="width:30px; height:30px;"><i
+                    data-lucide="x"></i></button>
+        </div>
+        <div style="padding:25px;">
+            <!-- 3D Credit Card -->
+            <div class="credit-card-wrap">
+                <div class="credit-card-box" id="credit-card-box">
+                    <div class="cc-face cc-front">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                            <span
+                                style="font-size:11px; text-transform:uppercase; letter-spacing:1px; font-weight:600;">Emovia
+                                Premium Pay</span>
+                            <i data-lucide="credit-card" style="color:rgba(255,255,255,0.6);"></i>
+                        </div>
+                        <div id="cc-display-number"
+                            style="font-size:18px; letter-spacing:2px; font-family:monospace; color:white;">•••• ••••
+                            •••• ••••</div>
+                        <div style="display:flex; justify-content:space-between;">
+                            <div>
+                                <div style="font-size:8px; text-transform:uppercase; color:var(--text-muted);">Card
+                                    Holder</div>
+                                <div id="cc-display-name"
+                                    style="font-size:12px; font-weight:600; text-transform:uppercase;">Guest User</div>
+                            </div>
+                            <div>
+                                <div style="font-size:8px; text-transform:uppercase; color:var(--text-muted);">Expires
+                                </div>
